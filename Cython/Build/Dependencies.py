@@ -951,6 +951,8 @@ def cythonize(module_list, exclude=None, nthreads=0, aliases=None, quiet=False, 
         exclude = []
     if 'include_path' not in options:
         options['include_path'] = ['.']
+    if os.environ.get("CYTHON_INCLUDE"):
+        options['include_path'].extend(os.environ["CYTHON_INCLUDE"].split(":"))
     if 'common_utility_include_dir' in options:
         safe_makedirs(options['common_utility_include_dir'])
 
