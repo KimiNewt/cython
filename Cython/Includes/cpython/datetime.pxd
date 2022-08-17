@@ -53,7 +53,7 @@ cdef extern from "datetime.h":
         object (*Delta_FromDelta)(int, int, int, int, PyTypeObject*)
 
         # constructors for the DB API
-        object (*DateTime_FromTimestamp)(object, object, object)
+        datetime (*DateTime_FromTimestamp)(PyObject*, object, PyObject*)
         object (*Date_FromTimestamp)(object, object)
 
     # Check type of the object.
@@ -210,3 +210,9 @@ cdef inline int timedelta_seconds(object o):
 # Get microseconds of timedelta
 cdef inline int timedelta_microseconds(object o):
     return (<PyDateTime_Delta*>o).microseconds
+
+# Backporting from Cython3:
+# Create datetime object using DB API constructor.
+cdef inline datetime datetime_from_timestamp(timestamp, tz=None):
+    return PyDateTimeAPI.DateTime_FromTimestamp(
+        <PyObject*>PyDateTimeAPI.DateTimeType, (timestamp, tz) if tz is not None else (timestamp,), NULL)
